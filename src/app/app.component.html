@@ -9,8 +9,10 @@
   <button (click)="downLoadEntityFiles()" [disabled]="!entities.length">Download Dto List</button>
   <button (click)="downloadEnumFiles()" [disabled]="!enums.length">Download Enum List</button>
 </div>
-<h1>Dto</h1>
-<div>
+<div (click)="close('dtos')" class="list">
+  <h1>Dto</h1>
+</div>
+<div id="dtos" >
   <div style="border-width: 2px;border-color: black;" *ngFor="let entity of entities">
     <h3>{{entity.Name}}</h3>
     <hr>
@@ -19,8 +21,10 @@
     </div>
   </div>
 </div>
-<h1>Enums</h1>
-<div>
+<div (click)="close('enums')" class="list">
+  <h1>Enums</h1>
+</div>
+<div id="enums">
   <div style="border-width: 2px;border-color: black;" *ngFor="let enum of enums">
     <h3>{{enum.Name}}</h3>
     <hr>

@@ -148,4 +148,12 @@ export class AppComponent {
       window.URL.revokeObjectURL(url);
     }, 0);
   }
+
+  close(id: string) {
+    let el = document.getElementById(id);
+    if (el?.classList.contains('close')) {
+      el?.classList.remove('close');
+    } else
+      el?.classList.add('close');
+  }
 }
