@@ -1,7 +1,8 @@
 <div>
   <h2>json to ts file</h2>
   <div style="display: flex;flex-direction: column;">
-    <label>Json string</label>
+    <small>You can convert xml to json this <a href="https://jsonformatter.org/xml-to-json" target="_blank">Link</a>.</small>
+    <h3>Json string</h3>
     <textarea [(ngModel)]="metData"></textarea>
   </div>
   <button (click)="showList()" [disabled]="!metData.length">Show List</button>
