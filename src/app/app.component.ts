@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 interface IProperty {
   Name: string;
   Type: String;
+  Nullable?: boolean;
 }
 interface IEntities {
   Name: string;
@@ -41,7 +42,11 @@ export class AppComponent {
       if (element._Name) {
         newEnt.Name = element._Name
         element.Property.forEach((e: any) => {
-          newEnt.Property.push({ Name: e._Name, Type: e._Type.slice(4) });
+          if (e._Nullable) {
+            newEnt.Property.push({ Name: e._Name, Type: e._Type.slice(4), Nullable: e._Nullable });
+          } else {
+            newEnt.Property.push({ Name: e._Name, Type: e._Type.slice(4) });
+          }
         });
         entities.push(newEnt)
         newEnt = {
@@ -55,10 +60,19 @@ export class AppComponent {
             newEnt.Name = el._Name
             if (el.Property.length) {
               el.Property.forEach((e: any) => {
-                newEnt.Property.push({ Name: e._Name, Type: e._Type.slice(4) });
+                if (e._Nullable) {
+                  newEnt.Property.push({ Name: e._Name, Type: e._Type.slice(4), Nullable: e._Nullable });
+                } else {
+                  newEnt.Property.push({ Name: e._Name, Type: e._Type.slice(4) });
+                }
               });
             } else {
-              newEnt.Property.push({ Name: el.Property._Name, Type: el.Property._Type.slice(4) });
+              if (el._Nullable) {
+                newEnt.Property.push({ Name: el.Property._Name, Type: el.Property._Type.slice(4), Nullable: el._Nullable });
+              }
+              else {
+                newEnt.Property.push({ Name: el.Property._Name, Type: el.Property._Type.slice(4) });
+              }
             }
             entities.push(newEnt)
             newEnt = {
@@ -99,7 +113,6 @@ export class AppComponent {
 
   showList() {
     this.getData();
-    console.log(this.entities)
     this.isShow = true;
   }
 
@@ -119,16 +132,31 @@ export class AppComponent {
   downLoadEntityFiles() {
     this.entities.forEach((entity: any, i: number) => {
       let text = 'export interface ' + entity.Name + ' {\n';
-      entity.Property.forEach((prop: any) => {
-        if (prop.Type.includes('ection(Store.')) {
-          prop.Type = prop.Type.replace('ection(Store.', '').replace(')', '')
+      entity.Property.forEach((prop: IProperty) => {
+        // if (prop.Type.includes('ection(Store.')) {
+        //   prop.Type = prop.Type.replace('ection(Store.', '').replace(')', '')
+        // }
+        text += prop.Name.charAt(0).toLocaleLowerCase().replace('ı', 'i') + prop.Name.slice(1).replace('ı', 'i');
+        if (prop.Nullable) {
+          text += ' : ';
+        } else {
+          text += ' ?: ';
         }
-        text += prop.Name.charAt(0).toLocaleLowerCase().replace('ı', 'i') +
-          prop.Name.slice(1).replace('ı', 'i') + ' : ' +
-          prop.Type.toLowerCase().replace('ı', 'i').replace('int32', 'number').replace('e.', '').replace('ection(edm.string)', 'string[]').replace('boolean', 'number').replace('int64', 'number').replace('double', 'number').replace('datetimeoffset', 'string') +
-          ';\n'
+        if (prop.Type.includes('ection(Store.')) {
+          text += prop.Type.toLowerCase().replace('ı', 'i').replace('ection(edm.string)', 'string[]')
+            .replace('int32', 'number').replace('e.', '').replace('int64', 'number')
+            .replace('double', 'number').replace('datetimeoffset', 'string').replace('ection(stor', '').replace(')', '');
+          text += '[]';
+        }else{
+          text += prop.Type.toLowerCase().replace('ı', 'i').replace('ection(edm.string)', 'string[]')
+            .replace('int32', 'number').replace('e.', '').replace('int64', 'number')
+            .replace('double', 'number').replace('datetimeoffset', 'string');
+        }
+        text += ';\n';
+        //.replace('ection(edm.string)', 'string[]')
       })
       text += '}'
+      console.log('text: ', text);
       setTimeout(() => {
         this.saveData(text, entity.Name)
       }, i * 300)
